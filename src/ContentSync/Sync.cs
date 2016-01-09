@@ -23,6 +23,8 @@ namespace GuiLabs.FileUtilities
             foreach (var leftOnly in diff.LeftOnlyFiles)
             {
                 var destinationFilePath = destination + leftOnly;
+                var destinationFolder = Path.GetDirectoryName(destinationFilePath);
+                Directory.CreateDirectory(destinationFolder);
                 File.Copy(source + leftOnly, destinationFilePath);
                 Console.WriteLine("Copy " + destinationFilePath);
             }
