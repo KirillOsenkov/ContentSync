@@ -40,6 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentSync.cs" />
+    <Compile Include="DiffResults.cs" />
+    <Compile Include="Files.cs" />
+    <Compile Include="Folders.cs" />
+    <Compile Include="Paths.cs" />
     <Compile Include="Sync.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

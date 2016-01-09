@@ -23,7 +23,11 @@ namespace GuiLabs.FileUtilities
             if (Directory.Exists(source))
             {
                 source = Path.GetFullPath(source);
-                destination = Path.GetFullPath(destination);
+                if (Directory.Exists(destination))
+                {
+                    destination = Path.GetFullPath(destination);
+                }
+
                 Sync.Directories(source, destination);
                 return;
             }
