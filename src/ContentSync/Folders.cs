@@ -90,16 +90,19 @@ namespace GuiLabs.FileUtilities
         public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder)
         {
             var files = Directory.GetFiles(rootFolder, "*", SearchOption.AllDirectories);
-            var prefixLength = rootFolder.Length;
-            var relative = files.Select(f => f.Substring(prefixLength));
-            return new HashSet<string>(relative, StringComparer.OrdinalIgnoreCase);
+            return GetRelativePaths(rootFolder, files);
         }
 
         public static HashSet<string> GetRelativePathsOfAllFolders(string rootFolder)
         {
             var folders = Directory.GetDirectories(rootFolder, "*", SearchOption.AllDirectories);
+            return GetRelativePaths(rootFolder, folders);
+        }
+
+        private static HashSet<string> GetRelativePaths(string rootFolder, string[] files)
+        {
             var prefixLength = rootFolder.Length;
-            var relative = folders.Select(f => f.Substring(prefixLength));
+            var relative = files.Select(f => f.Substring(prefixLength));
             return new HashSet<string>(relative, StringComparer.OrdinalIgnoreCase);
         }
     }
