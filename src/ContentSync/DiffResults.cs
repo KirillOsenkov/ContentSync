@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GuiLabs.FileUtilities
 {
@@ -19,6 +20,17 @@ namespace GuiLabs.FileUtilities
             IdenticalFiles = identicalFiles;
             ChangedFiles = changedFiles;
             RightOnlyFiles = rightOnlyFiles;
+        }
+
+        public bool AreFullyIdentical
+        {
+            get
+            {
+                return
+                    !LeftOnlyFiles.Any() &&
+                    !RightOnlyFiles.Any() &&
+                    !ChangedFiles.Any();
+            }
         }
     }
 }
