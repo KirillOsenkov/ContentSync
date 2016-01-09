@@ -37,6 +37,17 @@ namespace GuiLabs.FileUtilities
                         File("A2.txt", "A2"))),
                 Folder("B",
                     File("a.txt", "123")));
+            T(
+                Folder("A",
+                    Folder("A1")),
+                Folder("B"));
+            T(
+                Folder("A",
+                    Folder("A1")),
+                Folder("B",
+                    Folder("unused1"),
+                    Folder("unused2",
+                        File("unused.txt", ""))));
         }
 
         private void T(Folder source, Folder destination)

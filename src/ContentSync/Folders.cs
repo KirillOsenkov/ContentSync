@@ -22,6 +22,12 @@ namespace GuiLabs.FileUtilities
             var changedFiles = new List<string>();
             var rightOnlyFiles = new HashSet<string>(rightRelativePaths, StringComparer.OrdinalIgnoreCase);
 
+            var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
+            var rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
+            var commonFolders = leftOnlyFolders.Intersect(rightOnlyFolders, StringComparer.OrdinalIgnoreCase).ToArray();
+            leftOnlyFolders.ExceptWith(commonFolders);
+            rightOnlyFolders.ExceptWith(commonFolders);
+
             int current = 0;
             int total = leftRelativePaths.Count;
 
@@ -76,7 +82,9 @@ namespace GuiLabs.FileUtilities
                 leftOnlyFiles,
                 identicalFiles,
                 changedFiles,
-                rightOnlyFiles.OrderBy(s => s).ToArray());
+                rightOnlyFiles.OrderBy(s => s).ToArray(),
+                leftOnlyFolders.OrderBy(s => s).ToArray(),
+                rightOnlyFolders.OrderBy(s => s).ToArray());
         }
 
         public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder)
@@ -84,6 +92,14 @@ namespace GuiLabs.FileUtilities
             var files = Directory.GetFiles(rootFolder, "*", SearchOption.AllDirectories);
             var prefixLength = rootFolder.Length;
             var relative = files.Select(f => f.Substring(prefixLength));
+            return new HashSet<string>(relative, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public static HashSet<string> GetRelativePathsOfAllFolders(string rootFolder)
+        {
+            var folders = Directory.GetDirectories(rootFolder, "*", SearchOption.AllDirectories);
+            var prefixLength = rootFolder.Length;
+            var relative = folders.Select(f => f.Substring(prefixLength));
             return new HashSet<string>(relative, StringComparer.OrdinalIgnoreCase);
         }
     }

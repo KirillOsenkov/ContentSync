@@ -49,11 +49,59 @@ namespace GuiLabs.FileUtilities
                 Console.WriteLine("Delete " + deletedFilePath);
             }
 
-            Console.WriteLine();
-            Console.WriteLine($"{diff.LeftOnlyFiles.Count()} new");
-            Console.WriteLine($"{diff.ChangedFiles.Count()} changed");
-            Console.WriteLine($"{diff.RightOnlyFiles.Count()} deleted");
-            Console.WriteLine($"{diff.IdenticalFiles.Count()} identical");
+            int foldersCreated = 0;
+            foreach (var leftOnlyFolder in diff.LeftOnlyFolders)
+            {
+                var newFolder = destination + leftOnlyFolder;
+                if (!Directory.Exists(newFolder))
+                {
+                    Directory.CreateDirectory(newFolder);
+                    Console.WriteLine("Create " + newFolder);
+                    foldersCreated++;
+                }
+            }
+
+            int foldersDeleted = 0;
+            foreach (var rightOnlyFolder in diff.RightOnlyFolders)
+            {
+                var deletedFolderPath = destination + rightOnlyFolder;
+                if (Directory.Exists(deletedFolderPath))
+                {
+                    Directory.Delete(deletedFolderPath, recursive: true);
+                    Console.WriteLine("Delete " + deletedFolderPath);
+                    foldersDeleted++;
+                }
+            }
+
+            if (diff.LeftOnlyFiles.Any())
+            {
+                Console.WriteLine($"{diff.LeftOnlyFiles.Count()} files new");
+            }
+
+            if (diff.ChangedFiles.Any())
+            {
+                Console.WriteLine($"{diff.ChangedFiles.Count()} files changed");
+            }
+
+            if (diff.RightOnlyFiles.Any())
+            {
+                Console.WriteLine($"{diff.RightOnlyFiles.Count()} files deleted");
+            }
+
+            if (diff.IdenticalFiles.Any())
+            {
+                Console.WriteLine($"{diff.IdenticalFiles.Count()} files identical");
+            }
+
+            if (foldersCreated > 0)
+            {
+                Console.WriteLine($"{foldersCreated} folders created");
+            }
+
+            if (foldersDeleted > 0)
+            {
+                Console.WriteLine($"{foldersDeleted} folders deleted");
+            }
         }
 
         /// <summary>
