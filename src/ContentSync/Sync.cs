@@ -39,6 +39,12 @@ namespace GuiLabs.FileUtilities
             foreach (var rightOnly in diff.RightOnlyFiles)
             {
                 var deletedFilePath = destination + rightOnly;
+                var attributes = File.GetAttributes(deletedFilePath);
+                if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    File.SetAttributes(deletedFilePath, attributes & ~FileAttributes.ReadOnly);
+                }
+
                 File.Delete(deletedFilePath);
                 Console.WriteLine("Delete " + deletedFilePath);
             }
