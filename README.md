@@ -40,6 +40,7 @@ Finally when I have the diff ready, I begin the second phase which actually does
 ## Check out the tests
 I took an opportunity to write the unit-tests in a declarative, data-driven style where there's no explicit arrange-act-assert. Instead, both the Act and Assert phases are implicit (the tests are self-verifying). All you need to specify is the initial state of the left and right folders, the test does the rest (it Acts, and then compares the left and right folders to make sure they're identical).
 
-Read more here: 
+Read more here:
+
 https://github.com/KirillOsenkov/ContentSync/blob/master/src/ContentSync.Tests/Tests.cs
 https://github.com/KirillOsenkov/ContentSync/blob/master/src/ContentSync.Tests/Folder.cs
