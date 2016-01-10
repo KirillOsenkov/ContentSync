@@ -14,6 +14,7 @@ Or take another example, suppose you need to upload hundreds of thousands of fil
 In general, if you’re deciding whether a file was modified based off the timestamp, you’re bound to schedule unnecessary work that could have been avoided if you checked whether the actual file bytes have changed.
 
 This tool synchronizes the directories based on file contents and ignores timestamps completely.
+
     Usage: ContentSync.exe <Source> <Destination>
 
 ## Important! Use at your own risk. I bear no responsibility for any damage done by this tool.
