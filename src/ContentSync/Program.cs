@@ -28,7 +28,13 @@ namespace GuiLabs.FileUtilities
                     destination = Path.GetFullPath(destination);
                 }
 
-                Sync.Directories(source, destination);
+                using (Log.MeasureTime("Total time"))
+                {
+                    Sync.Directories(source, destination);
+                }
+
+                Log.PrintFinalReport();
+
                 return;
             }
 

@@ -15,15 +15,15 @@ namespace GuiLabs.FileUtilities
         public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot)
         {
             var leftRelativePaths = GetRelativePathsOfAllFiles(leftRoot);
+            var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
             var rightRelativePaths = GetRelativePathsOfAllFiles(rightRoot);
+            var rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
 
             var leftOnlyFiles = new List<string>();
             var identicalFiles = new List<string>();
             var changedFiles = new List<string>();
             var rightOnlyFiles = new HashSet<string>(rightRelativePaths, StringComparer.OrdinalIgnoreCase);
 
-            var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
-            var rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
             var commonFolders = leftOnlyFolders.Intersect(rightOnlyFolders, StringComparer.OrdinalIgnoreCase).ToArray();
             leftOnlyFolders.ExceptWith(commonFolders);
             rightOnlyFolders.ExceptWith(commonFolders);
@@ -31,48 +31,51 @@ namespace GuiLabs.FileUtilities
             int current = 0;
             int total = leftRelativePaths.Count;
 
-            Parallel.ForEach(
-                leftRelativePaths,
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 },
-                left =>
-                {
-                    var leftFullPath = leftRoot + left;
-                    var rightFullPath = rightRoot + left;
-
-                    bool rightContains = rightRelativePaths.Contains(left);
-                    if (rightContains)
+            using (Log.MeasureTime("Comparing"))
+            {
+                Parallel.ForEach(
+                    leftRelativePaths,
+                    new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 },
+                    left =>
                     {
-                        bool areSame = Files.AreContentsIdentical(leftFullPath, rightFullPath);
-                        if (areSame)
+                        var leftFullPath = leftRoot + left;
+                        var rightFullPath = rightRoot + left;
+
+                        bool rightContains = rightRelativePaths.Contains(left);
+                        if (rightContains)
                         {
-                            lock (identicalFiles)
+                            bool areSame = Files.AreContentsIdentical(leftFullPath, rightFullPath);
+                            if (areSame)
                             {
-                                identicalFiles.Add(left);
+                                lock (identicalFiles)
+                                {
+                                    identicalFiles.Add(left);
+                                }
+                            }
+                            else
+                            {
+                                lock (changedFiles)
+                                {
+                                    changedFiles.Add(left);
+                                }
                             }
                         }
                         else
                         {
-                            lock (changedFiles)
+                            lock (leftOnlyFiles)
                             {
-                                changedFiles.Add(left);
+                                leftOnlyFiles.Add(left);
                             }
                         }
-                    }
-                    else
-                    {
-                        lock (leftOnlyFiles)
+
+                        lock (rightOnlyFiles)
                         {
-                            leftOnlyFiles.Add(left);
+                            rightOnlyFiles.Remove(left);
                         }
-                    }
 
-                    lock (rightOnlyFiles)
-                    {
-                        rightOnlyFiles.Remove(left);
-                    }
-
-                    Interlocked.Increment(ref current);
-                });
+                        Interlocked.Increment(ref current);
+                    });
+            }
 
             leftOnlyFiles.Sort();
             identicalFiles.Sort();
@@ -89,14 +92,20 @@ namespace GuiLabs.FileUtilities
 
         public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder)
         {
-            var files = Directory.GetFiles(rootFolder, "*", SearchOption.AllDirectories);
-            return GetRelativePaths(rootFolder, files);
+            using (Log.MeasureTime("Scanning files in " + rootFolder))
+            {
+                var files = Directory.GetFiles(rootFolder, "*", SearchOption.AllDirectories);
+                return GetRelativePaths(rootFolder, files);
+            }
         }
 
         public static HashSet<string> GetRelativePathsOfAllFolders(string rootFolder)
         {
-            var folders = Directory.GetDirectories(rootFolder, "*", SearchOption.AllDirectories);
-            return GetRelativePaths(rootFolder, folders);
+            using (Log.MeasureTime("Scanning folders in " + rootFolder))
+            {
+                var folders = Directory.GetDirectories(rootFolder, "*", SearchOption.AllDirectories);
+                return GetRelativePaths(rootFolder, folders);
+            }
         }
 
         private static HashSet<string> GetRelativePaths(string rootFolder, string[] files)

@@ -20,87 +20,103 @@ namespace GuiLabs.FileUtilities
             destination = Paths.TrimSeparator(destination);
 
             var diff = Folders.DiffFolders(source, destination);
-            foreach (var leftOnly in diff.LeftOnlyFiles)
-            {
-                var destinationFilePath = destination + leftOnly;
-                var destinationFolder = Path.GetDirectoryName(destinationFilePath);
-                Directory.CreateDirectory(destinationFolder);
-                File.Copy(source + leftOnly, destinationFilePath);
-                Console.WriteLine("Copy " + destinationFilePath);
-            }
 
-            foreach (var changed in diff.ChangedFiles)
+            using (Log.MeasureTime("Copying new files"))
             {
-                var destinationFilePath = destination + changed;
-                File.Copy(source + changed, destinationFilePath, overwrite: true);
-                Console.WriteLine("Overwrite " + destinationFilePath);
-            }
-
-            foreach (var rightOnly in diff.RightOnlyFiles)
-            {
-                var deletedFilePath = destination + rightOnly;
-                var attributes = File.GetAttributes(deletedFilePath);
-                if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                foreach (var leftOnly in diff.LeftOnlyFiles)
                 {
-                    File.SetAttributes(deletedFilePath, attributes & ~FileAttributes.ReadOnly);
+                    var destinationFilePath = destination + leftOnly;
+                    var destinationFolder = Path.GetDirectoryName(destinationFilePath);
+                    Directory.CreateDirectory(destinationFolder);
+                    File.Copy(source + leftOnly, destinationFilePath);
+                    Console.WriteLine("Copy " + destinationFilePath);
                 }
+            }
 
-                File.Delete(deletedFilePath);
-                Console.WriteLine("Delete " + deletedFilePath);
+            using (Log.MeasureTime("Overwriting changed files"))
+            {
+                foreach (var changed in diff.ChangedFiles)
+                {
+                    var destinationFilePath = destination + changed;
+                    File.Copy(source + changed, destinationFilePath, overwrite: true);
+                    Console.WriteLine("Overwrite " + destinationFilePath);
+                }
+            }
+
+            using (Log.MeasureTime("Deleting extra files"))
+            {
+                foreach (var rightOnly in diff.RightOnlyFiles)
+                {
+                    var deletedFilePath = destination + rightOnly;
+                    var attributes = File.GetAttributes(deletedFilePath);
+                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        File.SetAttributes(deletedFilePath, attributes & ~FileAttributes.ReadOnly);
+                    }
+
+                    File.Delete(deletedFilePath);
+                    Console.WriteLine("Delete " + deletedFilePath);
+                }
             }
 
             int foldersCreated = 0;
-            foreach (var leftOnlyFolder in diff.LeftOnlyFolders)
+            using (Log.MeasureTime("Creating folders"))
             {
-                var newFolder = destination + leftOnlyFolder;
-                if (!Directory.Exists(newFolder))
+                foreach (var leftOnlyFolder in diff.LeftOnlyFolders)
                 {
-                    Directory.CreateDirectory(newFolder);
-                    Console.WriteLine("Create " + newFolder);
-                    foldersCreated++;
+                    var newFolder = destination + leftOnlyFolder;
+                    if (!Directory.Exists(newFolder))
+                    {
+                        Directory.CreateDirectory(newFolder);
+                        Console.WriteLine("Create " + newFolder);
+                        foldersCreated++;
+                    }
                 }
             }
 
             int foldersDeleted = 0;
-            foreach (var rightOnlyFolder in diff.RightOnlyFolders)
+            using (Log.MeasureTime("Deleting folders"))
             {
-                var deletedFolderPath = destination + rightOnlyFolder;
-                if (Directory.Exists(deletedFolderPath))
+                foreach (var rightOnlyFolder in diff.RightOnlyFolders)
                 {
-                    Directory.Delete(deletedFolderPath, recursive: true);
-                    Console.WriteLine("Delete " + deletedFolderPath);
-                    foldersDeleted++;
+                    var deletedFolderPath = destination + rightOnlyFolder;
+                    if (Directory.Exists(deletedFolderPath))
+                    {
+                        Directory.Delete(deletedFolderPath, recursive: true);
+                        Console.WriteLine("Delete " + deletedFolderPath);
+                        foldersDeleted++;
+                    }
                 }
             }
 
             if (diff.LeftOnlyFiles.Any())
             {
-                Console.WriteLine($"{diff.LeftOnlyFiles.Count()} files new");
-            }
-
-            if (diff.ChangedFiles.Any())
-            {
-                Console.WriteLine($"{diff.ChangedFiles.Count()} files changed");
-            }
-
-            if (diff.RightOnlyFiles.Any())
-            {
-                Console.WriteLine($"{diff.RightOnlyFiles.Count()} files deleted");
-            }
-
-            if (diff.IdenticalFiles.Any())
-            {
-                Console.WriteLine($"{diff.IdenticalFiles.Count()} files identical");
+                Log.WriteLine($"{diff.LeftOnlyFiles.Count()} new files", ConsoleColor.Green);
             }
 
             if (foldersCreated > 0)
             {
-                Console.WriteLine($"{foldersCreated} folders created");
+                Log.WriteLine($"{foldersCreated} folders created", ConsoleColor.Green);
+            }
+
+            if (diff.ChangedFiles.Any())
+            {
+                Log.WriteLine($"{diff.ChangedFiles.Count()} changed files", ConsoleColor.Yellow);
+            }
+
+            if (diff.RightOnlyFiles.Any())
+            {
+                Log.WriteLine($"{diff.RightOnlyFiles.Count()} deleted files", ConsoleColor.Red);
             }
 
             if (foldersDeleted > 0)
             {
-                Console.WriteLine($"{foldersDeleted} folders deleted");
+                Log.WriteLine($"{foldersDeleted} folders deleted", ConsoleColor.Red);
+            }
+
+            if (diff.IdenticalFiles.Any())
+            {
+                Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files", ConsoleColor.White);
             }
         }
 
