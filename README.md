@@ -1,6 +1,10 @@
 # ContentSync
 Directory copy/sync/mirror tool that uses file contents (not timestamps) to avoid touching identical files.
 
+Unfortunately for now you have to clone and build it yourself. But I'll look into publishing it on Chocolatey at some point.
+
+## Overview
+
 Suppose you need to sync the contents of two large folders, Source and Destination. Normally robocopy *.* Source Destination /MIR does the job. However even if the byte content of a file didn't change, but the timestamp did, robocopy will copy the file and change the timestamp of the destination to match the source.
 
 This is the safe and expected behavior, however there are whole classes of tools that track file modification based off the timestamp alone. For instance, MSBuild will trigger a cascading rebuild of all dependencies of a file if its timestamp has changed (even if the actual file contents is exactly the same). This is called overbuilding. A scalable build system should detect that the file contents didn’t change and avoid doing any work in this case.
