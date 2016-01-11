@@ -77,17 +77,20 @@ namespace GuiLabs.FileUtilities
                     });
             }
 
-            leftOnlyFiles.Sort();
-            identicalFiles.Sort();
-            changedFiles.Sort();
+            using (Log.MeasureTime("Sorting"))
+            {
+                leftOnlyFiles.Sort();
+                identicalFiles.Sort();
+                changedFiles.Sort();
 
-            return new FolderDiffResults(
-                leftOnlyFiles,
-                identicalFiles,
-                changedFiles,
-                rightOnlyFiles.OrderBy(s => s).ToArray(),
-                leftOnlyFolders.OrderBy(s => s).ToArray(),
-                rightOnlyFolders.OrderBy(s => s).ToArray());
+                return new FolderDiffResults(
+                    leftOnlyFiles,
+                    identicalFiles,
+                    changedFiles,
+                    rightOnlyFiles.OrderBy(s => s).ToArray(),
+                    leftOnlyFolders.OrderBy(s => s).ToArray(),
+                    rightOnlyFolders.OrderBy(s => s).ToArray());
+            }
         }
 
         public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder)
