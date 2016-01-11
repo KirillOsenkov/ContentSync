@@ -44,7 +44,7 @@ namespace GuiLabs.FileUtilities
 
         public static void PrintFinalReport()
         {
-            WriteLine(finalReport.ToString(), ConsoleColor.DarkGray);
+            Write(finalReport.ToString(), ConsoleColor.DarkGray);
         }
 
         public static IDisposable MeasureTime(string operationTitle)
