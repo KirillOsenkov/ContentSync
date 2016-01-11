@@ -5,6 +5,10 @@ Directory copy/sync/mirror tool that uses file contents (not timestamps) to avoi
 
 https://github.com/KirillOsenkov/ContentSync/releases/download/v1.0/ContentSync.exe
 
+    Usage: ContentSync.exe <Source> <Destination>
+
+**Important!** Use at your own risk.
+
 ## Overview
 
 Suppose you need to sync the contents of two large folders, Source and Destination. Normally ```robocopy *.* Source Destination /MIR``` does the job. However even if the byte content of a file didn't change, but the timestamp did, robocopy will copy the file and change the timestamp of the destination to match the source.
@@ -16,10 +20,6 @@ Or take another example, suppose you need to upload hundreds of thousands of fil
 In general, if you’re deciding whether a file was modified based off the timestamp, you’re bound to schedule unnecessary work that could have been avoided if you checked whether the actual file bytes have changed.
 
 This tool synchronizes the directories based on file contents and ignores timestamps completely.
-
-    Usage: ContentSync.exe <Source> <Destination>
-
-## Important! Use at your own risk. I bear no responsibility for any damage done by this tool.
 
 ## How it works
 It's quite simple. First it diffs the source and destination directories and builds a flat list of files 
