@@ -1,7 +1,9 @@
 # ContentSync
 Directory copy/sync/mirror tool that uses file contents (not timestamps) to avoid touching identical files.
 
-Unfortunately for now you have to clone and build it yourself. But I'll look into publishing it on Chocolatey at some point.
+## Download
+
+https://github.com/KirillOsenkov/ContentSync/releases/download/latest/ContentSync.exe
 
 ## Overview
 
