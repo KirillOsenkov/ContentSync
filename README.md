@@ -3,9 +3,50 @@ Directory copy/sync/mirror tool that uses file contents (not timestamps) to avoi
 
 ## Download
 
-https://github.com/KirillOsenkov/ContentSync/releases/download/v1.0/ContentSync.exe
+https://github.com/KirillOsenkov/ContentSync/releases/download/v1.1/ContentSync.exe
 
-    Usage: ContentSync.exe <Source> <Destination>
+## Usage
+
+```
+    Usage: ContentSync.exe <source> <destination> [<pattern>] [-c] [-u] [-d]
+                                                              [-dc] [-ds]
+                                                              [-whatif] [-q]
+                                                              [-h]
+
+    Copy/mirror/sync the destination folder to look exactly like source folder.
+    Copies missing files, deletes files from destination that are not in source,
+    overwrites files in destination that have different contents than in source.
+    Doesn't take into account file and date timestamps, works off content only.
+
+    -c       Copy files from source that don't exist in destination (left-only).
+
+    -u       Update files that have changed between source and destination. This
+             only overwrites the destination file if the contents are different.
+
+    -d       Delete right-only files (that are in destination but not in
+             source).
+
+    -ds      Delete same files (that exist in source and destination and are
+             same).
+
+    -dc      Delete changed files from destination (can't be used with -u).
+
+    -whatif  Print what would have been done (without changing anything).
+
+    -q       Quiet mode. Do not output anything to the console.
+
+    -h       Display this help and exit.
+
+    Default is: -c -u -d (and if the pattern is not specified, it also syncs
+    empty directories (creates empty directories that are in the source and
+    deletes empty directories that are in the destination).
+
+    Explicit mode: If any of -c -u -d -ds or -dc are specified explicitly,
+    all the defaults for other arguments are reset to false. For instance
+    if you specify -u then -c and -d default to false (and you have to
+    specify them explicitly). But if no arguments are specified, -c -u -d
+    default to true.
+```
 
 **Important!** Use at your own risk.
 
