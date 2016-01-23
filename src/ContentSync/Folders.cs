@@ -12,11 +12,11 @@ namespace GuiLabs.FileUtilities
         /// <summary>
         /// Assumes both leftRoot and rightRoot are existing folders.
         /// </summary>
-        public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot)
+        public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot, string pattern)
         {
-            var leftRelativePaths = GetRelativePathsOfAllFiles(leftRoot);
+            var leftRelativePaths = GetRelativePathsOfAllFiles(leftRoot, pattern);
             var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
-            var rightRelativePaths = GetRelativePathsOfAllFiles(rightRoot);
+            var rightRelativePaths = GetRelativePathsOfAllFiles(rightRoot, pattern);
             var rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
 
             var leftOnlyFiles = new List<string>();
@@ -93,18 +93,18 @@ namespace GuiLabs.FileUtilities
             }
         }
 
-        public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder)
+        public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder, string pattern)
         {
-            using (Log.MeasureTime("Scanning files in " + rootFolder))
+            using (Log.MeasureTime("Scanning files"))
             {
-                var files = Directory.GetFiles(rootFolder, "*", SearchOption.AllDirectories);
+                var files = Directory.GetFiles(rootFolder, pattern, SearchOption.AllDirectories);
                 return GetRelativePaths(rootFolder, files);
             }
         }
 
         public static HashSet<string> GetRelativePathsOfAllFolders(string rootFolder)
         {
-            using (Log.MeasureTime("Scanning folders in " + rootFolder))
+            using (Log.MeasureTime("Scanning folders"))
             {
                 var folders = Directory.GetDirectories(rootFolder, "*", SearchOption.AllDirectories);
                 return GetRelativePaths(rootFolder, folders);

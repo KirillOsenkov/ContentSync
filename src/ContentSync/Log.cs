@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace GuiLabs.FileUtilities
@@ -7,10 +9,17 @@ namespace GuiLabs.FileUtilities
     public class Log
     {
         private static readonly object consoleLock = new object();
-        private static readonly StringBuilder finalReport = new StringBuilder();
+        private static readonly List<Tuple<string, string>> finalReportEntries = new List<Tuple<string, string>>();
+
+        public static bool Quiet { get; internal set; }
 
         public static void Write(string message, ConsoleColor color = ConsoleColor.Gray)
         {
+            if (Quiet)
+            {
+                return;
+            }
+
             lock (consoleLock)
             {
                 var oldColor = Console.ForegroundColor;
@@ -25,6 +34,11 @@ namespace GuiLabs.FileUtilities
 
         public static void WriteLine(string message, ConsoleColor color = ConsoleColor.Gray)
         {
+            if (Quiet)
+            {
+                return;
+            }
+
             lock (consoleLock)
             {
                 var oldColor = Console.ForegroundColor;
@@ -37,14 +51,23 @@ namespace GuiLabs.FileUtilities
             }
         }
 
-        public static void AddFinalReportEntry(string message)
+        public static void AddFinalReportEntry(string title, string elapsedTime)
         {
-            finalReport.AppendLine(message);
+            finalReportEntries.Add(Tuple.Create(title, elapsedTime));
         }
 
         public static void PrintFinalReport()
         {
-            Write(finalReport.ToString(), ConsoleColor.DarkGray);
+            var leftColumnWidth = finalReportEntries.Max(e => e.Item1.Length) + 2;
+
+            var sb = new StringBuilder();
+            foreach (var entry in finalReportEntries)
+            {
+                var message = (entry.Item1 + ":").PadRight(leftColumnWidth) + entry.Item2;
+                sb.AppendLine(message);
+            }
+
+            Write(sb.ToString(), ConsoleColor.DarkGray);
         }
 
         public static IDisposable MeasureTime(string operationTitle)
@@ -67,7 +90,7 @@ namespace GuiLabs.FileUtilities
                 var elapsedTime = stopwatch.Elapsed.ToString(@"hh\:mm\:ss\.fff");
                 if (elapsedTime != "00:00:00.000")
                 {
-                    AddFinalReportEntry(title + ": " + elapsedTime);
+                    AddFinalReportEntry(title, elapsedTime);
                 }
             }
         }

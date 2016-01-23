@@ -72,7 +72,9 @@ namespace GuiLabs.FileUtilities
             source.CreateOnDisk(root);
             destination.CreateOnDisk(root);
 
-            Sync.Directories(Path.Combine(root, source.Name), Path.Combine(root, destination.Name));
+            var sourcePath = Path.Combine(root, source.Name);
+            var destinationPath = Path.Combine(root, destination.Name);
+            Sync.Directories(sourcePath, destinationPath, new Arguments(sourcePath, destinationPath));
 
             var actual = Folder.FromDisk(Path.Combine(root, destination.Name));
 

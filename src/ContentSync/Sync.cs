@@ -9,82 +9,107 @@ namespace GuiLabs.FileUtilities
         /// <summary>
         /// Assumes source directory exists. destination may or may not exist.
         /// </summary>
-        public static void Directories(string source, string destination)
+        public static void Directories(string source, string destination, Arguments arguments)
         {
             if (!Directory.Exists(destination))
             {
-                Directory.CreateDirectory(destination);
+                FileSystem.CreateDirectory(destination, arguments.WhatIf);
             }
 
             source = Paths.TrimSeparator(source);
             destination = Paths.TrimSeparator(destination);
 
-            var diff = Folders.DiffFolders(source, destination);
+            var diff = Folders.DiffFolders(source, destination, arguments.Pattern);
 
-            using (Log.MeasureTime("Copying new files"))
+            if (arguments.CopyLeftOnlyFiles)
             {
-                foreach (var leftOnly in diff.LeftOnlyFiles)
+                using (Log.MeasureTime("Copying new files"))
                 {
-                    var destinationFilePath = destination + leftOnly;
-                    var destinationFolder = Path.GetDirectoryName(destinationFilePath);
-                    Directory.CreateDirectory(destinationFolder);
-                    File.Copy(source + leftOnly, destinationFilePath);
-                    Console.WriteLine("Copy " + destinationFilePath);
-                }
-            }
-
-            using (Log.MeasureTime("Overwriting changed files"))
-            {
-                foreach (var changed in diff.ChangedFiles)
-                {
-                    var destinationFilePath = destination + changed;
-                    File.Copy(source + changed, destinationFilePath, overwrite: true);
-                    Console.WriteLine("Overwrite " + destinationFilePath);
-                }
-            }
-
-            using (Log.MeasureTime("Deleting extra files"))
-            {
-                foreach (var rightOnly in diff.RightOnlyFiles)
-                {
-                    var deletedFilePath = destination + rightOnly;
-                    var attributes = File.GetAttributes(deletedFilePath);
-                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    foreach (var leftOnly in diff.LeftOnlyFiles)
                     {
-                        File.SetAttributes(deletedFilePath, attributes & ~FileAttributes.ReadOnly);
+                        var destinationFilePath = destination + leftOnly;
+                        FileSystem.CopyFile(source + leftOnly, destinationFilePath, arguments.WhatIf);
                     }
+                }
+            }
 
-                    File.Delete(deletedFilePath);
-                    Console.WriteLine("Delete " + deletedFilePath);
+            if (arguments.UpdateChangedFiles)
+            {
+                using (Log.MeasureTime("Updating changed files"))
+                {
+                    foreach (var changed in diff.ChangedFiles)
+                    {
+                        var destinationFilePath = destination + changed;
+                        FileSystem.CopyFile(source + changed, destinationFilePath, arguments.WhatIf);
+                    }
+                }
+            }
+            else if (arguments.DeleteChangedFiles)
+            {
+                using (Log.MeasureTime("Deleting changed files"))
+                {
+                    foreach (var changed in diff.ChangedFiles)
+                    {
+                        var destinationFilePath = destination + changed;
+                        FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf);
+                    }
+                }
+            }
+
+            if (arguments.DeleteSameFiles)
+            {
+                using (Log.MeasureTime("Deleting identical files"))
+                {
+                    foreach (var same in diff.IdenticalFiles)
+                    {
+                        var destinationFilePath = destination + same;
+                        FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf);
+                    }
+                }
+            }
+
+            if (arguments.DeleteRightOnlyFiles)
+            {
+                using (Log.MeasureTime("Deleting extra files"))
+                {
+                    foreach (var rightOnly in diff.RightOnlyFiles)
+                    {
+                        var deletedFilePath = destination + rightOnly;
+                        FileSystem.DeleteFile(deletedFilePath, arguments.WhatIf);
+                    }
                 }
             }
 
             int foldersCreated = 0;
-            using (Log.MeasureTime("Creating folders"))
+            if (arguments.CopyEmptyDirectories)
             {
-                foreach (var leftOnlyFolder in diff.LeftOnlyFolders)
+                using (Log.MeasureTime("Creating folders"))
                 {
-                    var newFolder = destination + leftOnlyFolder;
-                    if (!Directory.Exists(newFolder))
+                    foreach (var leftOnlyFolder in diff.LeftOnlyFolders)
                     {
-                        Directory.CreateDirectory(newFolder);
-                        Console.WriteLine("Create " + newFolder);
-                        foldersCreated++;
+                        var newFolder = destination + leftOnlyFolder;
+                        if (!Directory.Exists(newFolder))
+                        {
+                            FileSystem.CreateDirectory(newFolder, arguments.WhatIf);
+                            foldersCreated++;
+                        }
                     }
                 }
             }
 
             int foldersDeleted = 0;
-            using (Log.MeasureTime("Deleting folders"))
+            if (arguments.DeleteRightOnlyDirectories)
             {
-                foreach (var rightOnlyFolder in diff.RightOnlyFolders)
+                using (Log.MeasureTime("Deleting folders"))
                 {
-                    var deletedFolderPath = destination + rightOnlyFolder;
-                    if (Directory.Exists(deletedFolderPath))
+                    foreach (var rightOnlyFolder in diff.RightOnlyFolders)
                     {
-                        Directory.Delete(deletedFolderPath, recursive: true);
-                        Console.WriteLine("Delete " + deletedFolderPath);
-                        foldersDeleted++;
+                        var deletedFolderPath = destination + rightOnlyFolder;
+                        if (Directory.Exists(deletedFolderPath))
+                        {
+                            FileSystem.DeleteDirectory(deletedFolderPath, arguments.WhatIf);
+                            foldersDeleted++;
+                        }
                     }
                 }
             }
@@ -126,14 +151,14 @@ namespace GuiLabs.FileUtilities
         /// If it exists and is different, it is overwritten.
         /// If it doesn't exist, source is copied.
         /// </summary>
-        public static void Files(string source, string destination)
+        public static void Files(string source, string destination, Arguments arguments)
         {
             if (File.Exists(destination) && FileUtilities.Files.AreContentsIdentical(source, destination))
             {
                 return;
             }
 
-            File.Copy(source, destination, overwrite: true);
+            FileSystem.CopyFile(source, destination, arguments.WhatIf);
         }
     }
 }
