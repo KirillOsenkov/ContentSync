@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/chocolatey/wiki/CreatePackages -->
+    <id>ContentSync</id>
+    <title>ContentSync</title>
+    <version>1.0.0</version>
+    <authors>Kirill Osenkov</authors>
+    <owners>KirillOsenkov</owners>
+    <summary>Content-based file sync tool</summary>
+    <description>Like xcopy or robocopy, but doesn't touch destination files if byte contents are identical. Compares files based on content, not timestamp.</description>
+    <projectUrl>https://github.com/KirillOsenkov/ContentSync</projectUrl>
+    <tags>copy sync compare files folder diff content</tags>
+    <copyright></copyright>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!-- Important note about https://cdn.rawgit.com: Files are cached permanently after the first request. Use commit URLs when updating the icon. -->
+    <!--<iconUrl>http://cdn.rawgit.com/__CHOCO_PKG_MAINTAINER_REPO__/master/icons/__NAME__.png</iconUrl>-->
+    <!--<dependencies>
+      <dependency id="" version="" />
+    </dependencies>-->
+    <releaseNotes>Initial release</releaseNotes>
+  </metadata>
+  <files>
+    <file src="..\..\bin\Debug\ContentSync.exe" target="." />
+  </files>
+</package>
+
