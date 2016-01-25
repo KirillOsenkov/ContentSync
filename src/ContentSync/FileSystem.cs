@@ -13,13 +13,17 @@ namespace GuiLabs.FileUtilities
             }
             else
             {
-                Log.WriteLine($"Copy {source} to {destination}");
                 var destinationFolder = Path.GetDirectoryName(destination);
 
                 try
                 {
-                    Directory.CreateDirectory(destinationFolder);
+                    if (!string.IsNullOrEmpty(destinationFolder))
+                    {
+                        Directory.CreateDirectory(destinationFolder);
+                    }
+
                     File.Copy(source, destination, overwrite: true);
+                    Log.WriteLine($"Copy {source} to {destination}");
                 }
                 catch (Exception ex)
                 {
@@ -36,7 +40,6 @@ namespace GuiLabs.FileUtilities
             }
             else
             {
-                Log.WriteLine("Delete " + deletedFilePath);
                 try
                 {
                     var attributes = File.GetAttributes(deletedFilePath);
@@ -46,6 +49,7 @@ namespace GuiLabs.FileUtilities
                     }
 
                     File.Delete(deletedFilePath);
+                    Log.WriteLine("Delete " + deletedFilePath);
                 }
                 catch (Exception ex)
                 {
@@ -62,10 +66,10 @@ namespace GuiLabs.FileUtilities
             }
             else
             {
-                Log.WriteLine("Create " + newFolder);
                 try
                 {
                     Directory.CreateDirectory(newFolder);
+                    Log.WriteLine("Create " + newFolder);
                 }
                 catch (Exception ex)
                 {
@@ -82,10 +86,10 @@ namespace GuiLabs.FileUtilities
             }
             else
             {
-                Log.WriteLine("Delete " + deletedFolderPath);
                 try
                 {
                     Directory.Delete(deletedFolderPath, recursive: true);
+                    Log.WriteLine("Delete " + deletedFolderPath);
                 }
                 catch (Exception ex)
                 {
