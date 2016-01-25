@@ -155,6 +155,7 @@ namespace GuiLabs.FileUtilities
         {
             if (File.Exists(destination) && FileUtilities.Files.AreContentsIdentical(source, destination))
             {
+                Log.WriteLine("File contents are identical.", ConsoleColor.White);
                 return;
             }
 

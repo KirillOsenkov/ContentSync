@@ -45,15 +45,14 @@ namespace GuiLabs.FileUtilities
                 return 0;
             }
 
-            if (File.Exists(source) && Directory.Exists(destination))
-            {
-                destination = Path.Combine(destination, Path.GetFileName(source));
-                Sync.Files(source, destination, arguments);
-                return 0;
-            }
-
             if (File.Exists(source))
             {
+                if (Directory.Exists(destination))
+                {
+                    destination = Path.GetFullPath(destination);
+                    destination = Path.Combine(destination, Path.GetFileName(source));
+                }
+
                 Sync.Files(source, destination, arguments);
                 return 0;
             }

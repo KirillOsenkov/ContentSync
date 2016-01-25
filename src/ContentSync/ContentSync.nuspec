@@ -5,7 +5,7 @@
     <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/chocolatey/wiki/CreatePackages -->
     <id>ContentSync</id>
     <title>ContentSync</title>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>Kirill Osenkov</authors>
     <owners>KirillOsenkov</owners>
     <summary>Content-based file sync tool</summary>
