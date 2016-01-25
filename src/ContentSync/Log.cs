@@ -51,6 +51,20 @@ namespace GuiLabs.FileUtilities
             }
         }
 
+        public static void WriteError(string message)
+        {
+            lock (consoleLock)
+            {
+                var oldColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Error.WriteLine(message);
+                if (oldColor != ConsoleColor.Red)
+                {
+                    Console.ForegroundColor = oldColor;
+                }
+            }
+        }
+
         public static void AddFinalReportEntry(string title, string elapsedTime)
         {
             finalReportEntries.Add(Tuple.Create(title, elapsedTime));

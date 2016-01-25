@@ -16,10 +16,7 @@ namespace GuiLabs.FileUtilities
 
             if (!string.IsNullOrEmpty(arguments.Error))
             {
-                var oldColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Error.WriteLine("Invalid arguments:" + Environment.NewLine + arguments.Error + Environment.NewLine);
-                Console.ForegroundColor = oldColor;
+                Log.WriteError("Invalid arguments:" + Environment.NewLine + arguments.Error + Environment.NewLine);
                 PrintUsage();
                 return 1;
             }
@@ -47,17 +44,24 @@ namespace GuiLabs.FileUtilities
 
             if (File.Exists(source))
             {
+                source = Path.GetFullPath(source);
+
                 if (Directory.Exists(destination))
                 {
                     destination = Path.GetFullPath(destination);
                     destination = Path.Combine(destination, Path.GetFileName(source));
                 }
 
+                if (File.Exists(destination))
+                {
+                    destination = Path.GetFullPath(destination);
+                }
+
                 Sync.Files(source, destination, arguments);
                 return 0;
             }
 
-            Console.Error.WriteLine($"Cannot find file or directory: {source}");
+            Log.WriteError($"Cannot find file or directory: {source}");
             return 2;
         }
 

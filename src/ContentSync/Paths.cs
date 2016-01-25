@@ -1,6 +1,6 @@
 ﻿namespace GuiLabs.FileUtilities
 {
-    class Paths
+    public static class Paths
     {
         public static string AppendSeparatorIfNeeded(string folderPath)
         {
@@ -20,6 +20,16 @@
             }
 
             return folderPath;
+        }
+
+        public static string TrimQuotes(string path)
+        {
+            if (path.Length > 2 && path[0] == '"' && path[path.Length - 1] == '"')
+            {
+                path = path.Substring(1, path.Length - 2);
+            }
+
+            return path;
         }
     }
 }

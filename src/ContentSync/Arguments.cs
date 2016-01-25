@@ -49,7 +49,7 @@ namespace GuiLabs.FileUtilities
                 }
                 else
                 {
-                    paths.Add(TrimQuotes(arg));
+                    paths.Add(Paths.TrimQuotes(arg));
                 }
             }
 
@@ -188,16 +188,6 @@ namespace GuiLabs.FileUtilities
 
             Source = paths[0];
             Destination = paths[1];
-        }
-
-        private static string TrimQuotes(string path)
-        {
-            if (path.Length > 2 && path[0] == '"' && path[path.Length - 1] == '"')
-            {
-                path = path.Substring(1, path.Length - 2);
-            }
-
-            return path;
         }
     }
 }

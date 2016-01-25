@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace GuiLabs.FileUtilities
 {
@@ -14,8 +15,16 @@ namespace GuiLabs.FileUtilities
             {
                 Log.WriteLine($"Copy {source} to {destination}");
                 var destinationFolder = Path.GetDirectoryName(destination);
-                Directory.CreateDirectory(destinationFolder);
-                File.Copy(source, destination, overwrite: true);
+
+                try
+                {
+                    Directory.CreateDirectory(destinationFolder);
+                    File.Copy(source, destination, overwrite: true);
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteError($"Unable to copy {source} to {destination}: {ex.Message}");
+                }
             }
         }
 
@@ -28,13 +37,20 @@ namespace GuiLabs.FileUtilities
             else
             {
                 Log.WriteLine("Delete " + deletedFilePath);
-                var attributes = File.GetAttributes(deletedFilePath);
-                if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                try
                 {
-                    File.SetAttributes(deletedFilePath, attributes & ~FileAttributes.ReadOnly);
-                }
+                    var attributes = File.GetAttributes(deletedFilePath);
+                    if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                    {
+                        File.SetAttributes(deletedFilePath, attributes & ~FileAttributes.ReadOnly);
+                    }
 
-                File.Delete(deletedFilePath);
+                    File.Delete(deletedFilePath);
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteError($"Unable to delete file {deletedFilePath}: {ex.Message}");
+                }
             }
         }
 
@@ -47,7 +63,14 @@ namespace GuiLabs.FileUtilities
             else
             {
                 Log.WriteLine("Create " + newFolder);
-                Directory.CreateDirectory(newFolder);
+                try
+                {
+                    Directory.CreateDirectory(newFolder);
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteError($"Unable to create directory {newFolder}: {ex.Message}");
+                }
             }
         }
 
@@ -60,7 +83,14 @@ namespace GuiLabs.FileUtilities
             else
             {
                 Log.WriteLine("Delete " + deletedFolderPath);
-                Directory.Delete(deletedFolderPath, recursive: true);
+                try
+                {
+                    Directory.Delete(deletedFolderPath, recursive: true);
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteError($"Unable to delete directory {deletedFolderPath}: {ex.Message}");
+                }
             }
         }
     }
