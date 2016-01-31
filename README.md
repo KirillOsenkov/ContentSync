@@ -3,7 +3,7 @@ Directory copy/sync/mirror tool that uses file contents (not timestamps) to avoi
 
 ## Download
 
-https://github.com/KirillOsenkov/ContentSync/releases/download/v1.1/ContentSync.exe
+https://github.com/KirillOsenkov/ContentSync/releases/download/v1.2/ContentSync.exe
 
 ## Usage
 
