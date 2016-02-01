@@ -10,14 +10,25 @@ namespace GuiLabs.FileUtilities
     public class Folders
     {
         /// <summary>
-        /// Assumes both leftRoot and rightRoot are existing folders.
+        /// Assumes leftRoot is an existing folder. rightRoot may not exist if operating in speculative mode.
         /// </summary>
         public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot, string pattern)
         {
             var leftRelativePaths = GetRelativePathsOfAllFiles(leftRoot, pattern);
             var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
-            var rightRelativePaths = GetRelativePathsOfAllFiles(rightRoot, pattern);
-            var rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
+
+            HashSet<string> rightRelativePaths;
+            HashSet<string> rightOnlyFolders;
+            if (Directory.Exists(rightRoot))
+            {
+                rightRelativePaths = GetRelativePathsOfAllFiles(rightRoot, pattern);
+                rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
+            }
+            else
+            {
+                rightRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                rightOnlyFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            }
 
             var leftOnlyFiles = new List<string>();
             var identicalFiles = new List<string>();
