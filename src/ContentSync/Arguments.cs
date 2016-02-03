@@ -91,6 +91,10 @@ namespace GuiLabs.FileUtilities
                             UpdateChangedFiles = true;
                             DeleteRightOnlyFiles = true;
                             break;
+                        case "ud":
+                            UpdateChangedFiles = true;
+                            DeleteRightOnlyFiles = true;
+                            break;
                         case "ds":
                             DeleteSameFiles = true;
                             break;
