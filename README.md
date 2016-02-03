@@ -5,6 +5,11 @@ Directory copy/sync/mirror tool that uses file contents (not timestamps) to avoi
 
 https://github.com/KirillOsenkov/ContentSync/releases/download/v1.3/ContentSync.exe
 
+Also available on Chocolatey:
+https://chocolatey.org/packages/ContentSync/
+
+    cinst ContentSync
+
 ## Usage
 
 ```
