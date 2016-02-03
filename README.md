@@ -13,9 +13,12 @@ https://github.com/KirillOsenkov/ContentSync/releases/download/v1.2/ContentSync.
                                                               [-whatif] [-q]
                                                               [-h]
 
-    Copy/mirror/sync the destination folder to look exactly like source folder.
-    Copies missing files, deletes files from destination that are not in source,
-    overwrites files in destination that have different contents than in source.
+    Copy/mirror/sync the destination folder to look exactly like the source.
+    Only modifies the destination folder, never touches the source folder.
+    Copies missing files from source to destination. Overwrites files in
+    destination that have different contents than in source. Deletes files from
+    destination that are not in source.
+    
     Doesn't take into account file and date timestamps, works off content only.
 
     -c       Copy files from source that don't exist in destination (left-only).
@@ -26,8 +29,8 @@ https://github.com/KirillOsenkov/ContentSync/releases/download/v1.2/ContentSync.
     -d       Delete right-only files (that are in destination but not in
              source).
 
-    -ds      Delete same files (that exist in source and destination and are
-             same).
+    -ds      Delete same (identical) files from destination (that exist in
+             source and destination and have identical contents).
 
     -dc      Delete changed files from destination (can't be used with -u).
 
@@ -46,6 +49,14 @@ https://github.com/KirillOsenkov/ContentSync/releases/download/v1.2/ContentSync.
     if you specify -u then -c and -d default to false (and you have to
     specify them explicitly). But if no arguments are specified, -c -u -d
     default to true.
+    
+    You can combine -c and -u to -cu, -c and -d to -cd, -u and -d to -ud
+    and -c -u -d to -cud.
+
+    Common usage examples:
+    -cu -whatif to see which files have changed or are new
+    -ds to delete duplicate (identical files) from destination
+    -whatif to diff directories
 ```
 
 **Important!** Use at your own risk.
