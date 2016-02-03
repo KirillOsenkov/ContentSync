@@ -21,6 +21,8 @@ namespace GuiLabs.FileUtilities
 
             var diff = Folders.DiffFolders(source, destination, arguments.Pattern);
 
+            bool changesMade = false;
+
             if (arguments.CopyLeftOnlyFiles)
             {
                 using (Log.MeasureTime("Copying new files"))
@@ -29,6 +31,7 @@ namespace GuiLabs.FileUtilities
                     {
                         var destinationFilePath = destination + leftOnly;
                         FileSystem.CopyFile(source + leftOnly, destinationFilePath, arguments.WhatIf);
+                        changesMade = true;
                     }
                 }
             }
@@ -41,6 +44,7 @@ namespace GuiLabs.FileUtilities
                     {
                         var destinationFilePath = destination + changed;
                         FileSystem.CopyFile(source + changed, destinationFilePath, arguments.WhatIf);
+                        changesMade = true;
                     }
                 }
             }
@@ -52,6 +56,7 @@ namespace GuiLabs.FileUtilities
                     {
                         var destinationFilePath = destination + changed;
                         FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf);
+                        changesMade = true;
                     }
                 }
             }
@@ -64,6 +69,7 @@ namespace GuiLabs.FileUtilities
                     {
                         var destinationFilePath = destination + same;
                         FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf);
+                        changesMade = true;
                     }
                 }
             }
@@ -76,6 +82,7 @@ namespace GuiLabs.FileUtilities
                     {
                         var deletedFilePath = destination + rightOnly;
                         FileSystem.DeleteFile(deletedFilePath, arguments.WhatIf);
+                        changesMade = true;
                     }
                 }
             }
@@ -92,6 +99,7 @@ namespace GuiLabs.FileUtilities
                         {
                             FileSystem.CreateDirectory(newFolder, arguments.WhatIf);
                             foldersCreated++;
+                            changesMade = true;
                         }
                     }
                 }
@@ -109,6 +117,7 @@ namespace GuiLabs.FileUtilities
                         {
                             FileSystem.DeleteDirectory(deletedFolderPath, arguments.WhatIf);
                             foldersDeleted++;
+                            changesMade = true;
                         }
                     }
                 }
@@ -202,6 +211,18 @@ namespace GuiLabs.FileUtilities
                 else
                 {
                     Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files", ConsoleColor.White);
+                }
+            }
+
+            if (!changesMade)
+            {
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine("Would have made no changes.", ConsoleColor.White);
+                }
+                else
+                {
+                    Log.WriteLine("Made no changes.", ConsoleColor.White);
                 }
             }
         }
