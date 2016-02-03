@@ -114,34 +114,95 @@ namespace GuiLabs.FileUtilities
                 }
             }
 
-            if (diff.LeftOnlyFiles.Any())
+            if (diff.LeftOnlyFiles.Any() && arguments.CopyLeftOnlyFiles)
             {
-                Log.WriteLine($"{diff.LeftOnlyFiles.Count()} new files", ConsoleColor.Green);
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine($"Would have copied {diff.LeftOnlyFiles.Count()} new files", ConsoleColor.Green);
+                }
+                else
+                {
+                    Log.WriteLine($"{diff.LeftOnlyFiles.Count()} new files copied", ConsoleColor.Green);
+                }
             }
 
-            if (foldersCreated > 0)
+            if (foldersCreated > 0 && arguments.CopyEmptyDirectories)
             {
-                Log.WriteLine($"{foldersCreated} folders created", ConsoleColor.Green);
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine($"Would have created {foldersCreated} folders", ConsoleColor.Green);
+                }
+                else
+                {
+                    Log.WriteLine($"{foldersCreated} folders created", ConsoleColor.Green);
+                }
             }
 
-            if (diff.ChangedFiles.Any())
+            if (diff.ChangedFiles.Any() && arguments.UpdateChangedFiles)
             {
-                Log.WriteLine($"{diff.ChangedFiles.Count()} changed files", ConsoleColor.Yellow);
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine($"Would have updated {diff.ChangedFiles.Count()} changed files", ConsoleColor.Yellow);
+                }
+                else
+                {
+                    Log.WriteLine($"{diff.ChangedFiles.Count()} changed files updated", ConsoleColor.Yellow);
+                }
             }
 
-            if (diff.RightOnlyFiles.Any())
+            if (diff.ChangedFiles.Any() && arguments.DeleteChangedFiles)
             {
-                Log.WriteLine($"{diff.RightOnlyFiles.Count()} deleted files", ConsoleColor.Red);
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine($"Would have deleted {diff.ChangedFiles.Count()} changed files", ConsoleColor.Yellow);
+                }
+                else
+                {
+                    Log.WriteLine($"{diff.ChangedFiles.Count()} changed files deleted", ConsoleColor.Yellow);
+                }
             }
 
-            if (foldersDeleted > 0)
+            if (diff.RightOnlyFiles.Any() && arguments.DeleteRightOnlyFiles)
             {
-                Log.WriteLine($"{foldersDeleted} folders deleted", ConsoleColor.Red);
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine($"Would have deleted {diff.RightOnlyFiles.Count()} right-only files", ConsoleColor.Red);
+                }
+                else
+                {
+                    Log.WriteLine($"{diff.RightOnlyFiles.Count()} right-only files deleted", ConsoleColor.Red);
+                }
+            }
+
+            if (foldersDeleted > 0 && arguments.DeleteRightOnlyDirectories)
+            {
+                if (arguments.WhatIf)
+                {
+                    Log.WriteLine($"Would have deleted {foldersDeleted} right-only folders", ConsoleColor.Red);
+                }
+                else
+                {
+                    Log.WriteLine($"{foldersDeleted} right-only folders deleted", ConsoleColor.Red);
+                }
             }
 
             if (diff.IdenticalFiles.Any())
             {
-                Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files", ConsoleColor.White);
+                if (arguments.DeleteSameFiles)
+                {
+                    if (arguments.WhatIf)
+                    {
+                        Log.WriteLine($"Would have deleted {diff.IdenticalFiles.Count()} identical files from destination", ConsoleColor.White);
+                    }
+                    else
+                    {
+                        Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files deleted from destination", ConsoleColor.White);
+                    }
+                }
+                else
+                {
+                    Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files", ConsoleColor.White);
+                }
             }
         }
 
