@@ -47,5 +47,8 @@
     <Compile Include="Paths.cs" />
     <Compile Include="Sync.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ContentSync.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
