@@ -14,20 +14,21 @@ namespace GuiLabs.FileUtilities
         /// </summary>
         public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot, string pattern, bool compareContents = true)
         {
-            var leftRelativePaths = GetRelativePathsOfAllFiles(leftRoot, pattern);
-            var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
+            HashSet<string> leftRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> leftOnlyFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (Log.MeasureTime("Scanning source directory"))
+            {
+                GetRelativePathsOfAllFiles(leftRoot, pattern, leftRelativePaths, leftOnlyFolders);
+            }
 
-            HashSet<string> rightRelativePaths;
-            HashSet<string> rightOnlyFolders;
+            HashSet<string> rightRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> rightOnlyFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (Directory.Exists(rightRoot))
             {
-                rightRelativePaths = GetRelativePathsOfAllFiles(rightRoot, pattern);
-                rightOnlyFolders = GetRelativePathsOfAllFolders(rightRoot);
-            }
-            else
-            {
-                rightRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                rightOnlyFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                using (Log.MeasureTime("Scanning destination directory"))
+                {
+                    GetRelativePathsOfAllFiles(rightRoot, pattern, rightRelativePaths, rightOnlyFolders);
+                }
             }
 
             var leftOnlyFiles = new List<string>();
@@ -104,29 +105,23 @@ namespace GuiLabs.FileUtilities
             }
         }
 
-        public static HashSet<string> GetRelativePathsOfAllFiles(string rootFolder, string pattern)
+        public static void GetRelativePathsOfAllFiles(string rootFolder, string pattern, HashSet<string> files, HashSet<string> folders)
         {
-            using (Log.MeasureTime("Scanning files"))
-            {
-                var files = Directory.GetFiles(rootFolder, pattern, SearchOption.AllDirectories);
-                return GetRelativePaths(rootFolder, files);
-            }
-        }
-
-        public static HashSet<string> GetRelativePathsOfAllFolders(string rootFolder)
-        {
-            using (Log.MeasureTime("Scanning folders"))
-            {
-                var folders = Directory.GetDirectories(rootFolder, "*", SearchOption.AllDirectories);
-                return GetRelativePaths(rootFolder, folders);
-            }
-        }
-
-        private static HashSet<string> GetRelativePaths(string rootFolder, string[] files)
-        {
+            var rootDirectoryInfo = new DirectoryInfo(rootFolder);
             var prefixLength = rootFolder.Length;
-            var relative = files.Select(f => f.Substring(prefixLength));
-            return new HashSet<string>(relative, StringComparer.OrdinalIgnoreCase);
+            var fileSystemInfos = rootDirectoryInfo.EnumerateFileSystemInfos(pattern, SearchOption.AllDirectories);
+            foreach (var fileSystemInfo in fileSystemInfos)
+            {
+                string relativePath = fileSystemInfo.FullName.Substring(prefixLength);
+                if (fileSystemInfo is FileInfo)
+                {
+                    files.Add(relativePath);
+                }
+                else
+                {
+                    folders.Add(relativePath);
+                }
+            }
         }
     }
 }
