@@ -22,6 +22,10 @@ namespace GuiLabs.FileUtilities
             var diff = Folders.DiffFolders(source, destination, arguments.Pattern, compareContents: arguments.UpdateChangedFiles);
 
             bool changesMade = false;
+            int filesFailedToCopy = 0;
+            int filesFailedToDelete = 0;
+            int foldersFailedToCreate = 0;
+            int foldersFailedToDelete = 0;
 
             if (arguments.CopyLeftOnlyFiles)
             {
@@ -30,7 +34,11 @@ namespace GuiLabs.FileUtilities
                     foreach (var leftOnly in diff.LeftOnlyFiles)
                     {
                         var destinationFilePath = destination + leftOnly;
-                        FileSystem.CopyFile(source + leftOnly, destinationFilePath, arguments.WhatIf);
+                        if (!FileSystem.CopyFile(source + leftOnly, destinationFilePath, arguments.WhatIf))
+                        {
+                            filesFailedToCopy++;
+                        }
+
                         changesMade = true;
                     }
                 }
@@ -43,7 +51,11 @@ namespace GuiLabs.FileUtilities
                     foreach (var changed in diff.ChangedFiles)
                     {
                         var destinationFilePath = destination + changed;
-                        FileSystem.CopyFile(source + changed, destinationFilePath, arguments.WhatIf);
+                        if (!FileSystem.CopyFile(source + changed, destinationFilePath, arguments.WhatIf))
+                        {
+                            filesFailedToCopy++;
+                        }
+
                         changesMade = true;
                     }
                 }
@@ -55,7 +67,11 @@ namespace GuiLabs.FileUtilities
                     foreach (var changed in diff.ChangedFiles)
                     {
                         var destinationFilePath = destination + changed;
-                        FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf);
+                        if (!FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf))
+                        {
+                            filesFailedToDelete++;
+                        }
+
                         changesMade = true;
                     }
                 }
@@ -68,7 +84,11 @@ namespace GuiLabs.FileUtilities
                     foreach (var same in diff.IdenticalFiles)
                     {
                         var destinationFilePath = destination + same;
-                        FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf);
+                        if (!FileSystem.DeleteFile(destinationFilePath, arguments.WhatIf))
+                        {
+                            filesFailedToDelete++;
+                        }
+
                         changesMade = true;
                     }
                 }
@@ -81,7 +101,11 @@ namespace GuiLabs.FileUtilities
                     foreach (var rightOnly in diff.RightOnlyFiles)
                     {
                         var deletedFilePath = destination + rightOnly;
-                        FileSystem.DeleteFile(deletedFilePath, arguments.WhatIf);
+                        if (!FileSystem.DeleteFile(deletedFilePath, arguments.WhatIf))
+                        {
+                            filesFailedToDelete++;
+                        }
+
                         changesMade = true;
                     }
                 }
@@ -97,8 +121,15 @@ namespace GuiLabs.FileUtilities
                         var newFolder = destination + leftOnlyFolder;
                         if (!Directory.Exists(newFolder))
                         {
-                            FileSystem.CreateDirectory(newFolder, arguments.WhatIf);
-                            foldersCreated++;
+                            if (!FileSystem.CreateDirectory(newFolder, arguments.WhatIf))
+                            {
+                                foldersFailedToCreate++;
+                            }
+                            else
+                            {
+                                foldersCreated++;
+                            }
+
                             changesMade = true;
                         }
                     }
@@ -115,8 +146,15 @@ namespace GuiLabs.FileUtilities
                         var deletedFolderPath = destination + rightOnlyFolder;
                         if (Directory.Exists(deletedFolderPath))
                         {
-                            FileSystem.DeleteDirectory(deletedFolderPath, arguments.WhatIf);
-                            foldersDeleted++;
+                            if (!FileSystem.DeleteDirectory(deletedFolderPath, arguments.WhatIf))
+                            {
+                                foldersFailedToDelete++;
+                            }
+                            else
+                            {
+                                foldersDeleted++;
+                            }
+
                             changesMade = true;
                         }
                     }
@@ -212,6 +250,26 @@ namespace GuiLabs.FileUtilities
                 {
                     Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files", ConsoleColor.White);
                 }
+            }
+
+            if (filesFailedToCopy > 0)
+            {
+                Log.WriteLine($"Failed to copy {filesFailedToCopy} files", ConsoleColor.Red);
+            }
+
+            if (filesFailedToDelete > 0)
+            {
+                Log.WriteLine($"Failed to delete {filesFailedToDelete} files.", ConsoleColor.Red);
+            }
+
+            if (foldersFailedToCreate > 0)
+            {
+                Log.WriteLine($"Failed to create {foldersFailedToCreate} folders.", ConsoleColor.Red);
+            }
+
+            if (foldersFailedToDelete > 0)
+            {
+                Log.WriteLine($"Failed to delete {foldersFailedToDelete} folders.", ConsoleColor.Red);
             }
 
             if (!changesMade)

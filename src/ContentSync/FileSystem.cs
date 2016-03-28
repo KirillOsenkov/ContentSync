@@ -5,7 +5,7 @@ namespace GuiLabs.FileUtilities
 {
     public class FileSystem
     {
-        public static void CopyFile(string source, string destination, bool speculative)
+        public static bool CopyFile(string source, string destination, bool speculative)
         {
             if (speculative)
             {
@@ -28,11 +28,14 @@ namespace GuiLabs.FileUtilities
                 catch (Exception ex)
                 {
                     Log.WriteError($"Unable to copy {source} to {destination}: {ex.Message}");
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        public static void DeleteFile(string deletedFilePath, bool speculative)
+        public static bool DeleteFile(string deletedFilePath, bool speculative)
         {
             if (speculative)
             {
@@ -54,11 +57,14 @@ namespace GuiLabs.FileUtilities
                 catch (Exception ex)
                 {
                     Log.WriteError($"Unable to delete file {deletedFilePath}: {ex.Message}");
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        public static void CreateDirectory(string newFolder, bool speculative)
+        public static bool CreateDirectory(string newFolder, bool speculative)
         {
             if (speculative)
             {
@@ -74,11 +80,14 @@ namespace GuiLabs.FileUtilities
                 catch (Exception ex)
                 {
                     Log.WriteError($"Unable to create directory {newFolder}: {ex.Message}");
+                    return false;
                 }
             }
+
+            return true;
         }
 
-        public static void DeleteDirectory(string deletedFolderPath, bool speculative)
+        public static bool DeleteDirectory(string deletedFolderPath, bool speculative)
         {
             if (speculative)
             {
@@ -94,8 +103,11 @@ namespace GuiLabs.FileUtilities
                 catch (Exception ex)
                 {
                     Log.WriteError($"Unable to delete directory {deletedFolderPath}: {ex.Message}");
+                    return false;
                 }
             }
+
+            return true;
         }
     }
 }
