@@ -59,6 +59,7 @@ https://chocolatey.org/packages/ContentSync/
     and -c -u -d to -cud.
 
     Common usage examples:
+    -c to copy files missing from the destination (useful when restarting a previous failed copy operation)
     -cu -whatif to see which files have changed or are new
     -ds to delete duplicate (identical files) from destination
     -whatif to diff directories
