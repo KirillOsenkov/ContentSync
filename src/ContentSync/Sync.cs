@@ -19,7 +19,7 @@ namespace GuiLabs.FileUtilities
             source = Paths.TrimSeparator(source);
             destination = Paths.TrimSeparator(destination);
 
-            var diff = Folders.DiffFolders(source, destination, arguments.Pattern);
+            var diff = Folders.DiffFolders(source, destination, arguments.Pattern, compareContents: arguments.UpdateChangedFiles);
 
             bool changesMade = false;
 

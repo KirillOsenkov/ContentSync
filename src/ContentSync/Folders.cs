@@ -12,7 +12,7 @@ namespace GuiLabs.FileUtilities
         /// <summary>
         /// Assumes leftRoot is an existing folder. rightRoot may not exist if operating in speculative mode.
         /// </summary>
-        public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot, string pattern)
+        public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot, string pattern, bool compareContents = true)
         {
             var leftRelativePaths = GetRelativePathsOfAllFiles(leftRoot, pattern);
             var leftOnlyFolders = GetRelativePathsOfAllFolders(leftRoot);
@@ -55,7 +55,7 @@ namespace GuiLabs.FileUtilities
                         bool rightContains = rightRelativePaths.Contains(left);
                         if (rightContains)
                         {
-                            bool areSame = Files.AreContentsIdentical(leftFullPath, rightFullPath);
+                            bool areSame = !compareContents || Files.AreContentsIdentical(leftFullPath, rightFullPath);
                             if (areSame)
                             {
                                 lock (identicalFiles)
