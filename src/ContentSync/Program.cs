@@ -7,62 +7,70 @@ namespace GuiLabs.FileUtilities
     {
         private static int Main(string[] args)
         {
-            var arguments = new Arguments(args);
-            if (arguments.Help || args.Length == 0)
+            try
             {
-                PrintUsage();
-                return 0;
-            }
-
-            if (!string.IsNullOrEmpty(arguments.Error))
-            {
-                Log.WriteError("Invalid arguments:" + Environment.NewLine + arguments.Error + Environment.NewLine);
-                PrintUsage();
-                return 1;
-            }
-
-            string source = arguments.Source;
-            string destination = arguments.Destination;
-
-            if (Directory.Exists(source))
-            {
-                source = Path.GetFullPath(source);
-                if (Directory.Exists(destination))
+                var arguments = new Arguments(args);
+                if (arguments.Help || args.Length == 0)
                 {
-                    destination = Path.GetFullPath(destination);
+                    PrintUsage();
+                    return 0;
                 }
 
-                using (Log.MeasureTime("Total time"))
+                if (!string.IsNullOrEmpty(arguments.Error))
                 {
-                    Sync.Directories(source, destination, arguments);
+                    Log.WriteError("Invalid arguments:" + Environment.NewLine + arguments.Error + Environment.NewLine);
+                    PrintUsage();
+                    return 1;
                 }
 
-                Log.PrintFinalReport();
+                string source = arguments.Source;
+                string destination = arguments.Destination;
 
-                return 0;
+                if (Directory.Exists(source))
+                {
+                    source = Path.GetFullPath(source);
+                    if (Directory.Exists(destination))
+                    {
+                        destination = Path.GetFullPath(destination);
+                    }
+
+                    using (Log.MeasureTime("Total time"))
+                    {
+                        Sync.Directories(source, destination, arguments);
+                    }
+
+                    Log.PrintFinalReport();
+
+                    return 0;
+                }
+
+                if (File.Exists(source))
+                {
+                    source = Path.GetFullPath(source);
+
+                    if (Directory.Exists(destination))
+                    {
+                        destination = Path.GetFullPath(destination);
+                        destination = Path.Combine(destination, Path.GetFileName(source));
+                    }
+
+                    if (File.Exists(destination))
+                    {
+                        destination = Path.GetFullPath(destination);
+                    }
+
+                    Sync.Files(source, destination, arguments);
+                    return 0;
+                }
+
+                Log.WriteError($"Cannot find file or directory: {source}");
+                return 2;
             }
-
-            if (File.Exists(source))
+            catch (Exception ex)
             {
-                source = Path.GetFullPath(source);
-
-                if (Directory.Exists(destination))
-                {
-                    destination = Path.GetFullPath(destination);
-                    destination = Path.Combine(destination, Path.GetFileName(source));
-                }
-
-                if (File.Exists(destination))
-                {
-                    destination = Path.GetFullPath(destination);
-                }
-
-                Sync.Files(source, destination, arguments);
-                return 0;
+                Log.WriteError($"Unrecoverable error: {ex.Message}");
+                return 3;
             }
-
-            Log.WriteError($"Cannot find file or directory: {source}");
-            return 2;
         }
 
         private static void PrintUsage()

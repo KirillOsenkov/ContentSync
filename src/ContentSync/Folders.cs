@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -105,6 +106,8 @@ namespace GuiLabs.FileUtilities
             }
         }
 
+        private static readonly FieldInfo pathField = typeof(FileSystemInfo).GetField("FullPath", BindingFlags.Instance | BindingFlags.NonPublic);
+
         public static void GetRelativePathsOfAllFiles(string rootFolder, string pattern, HashSet<string> files, HashSet<string> folders)
         {
             var rootDirectoryInfo = new DirectoryInfo(rootFolder);
@@ -112,7 +115,8 @@ namespace GuiLabs.FileUtilities
             var fileSystemInfos = rootDirectoryInfo.EnumerateFileSystemInfos(pattern, SearchOption.AllDirectories);
             foreach (var fileSystemInfo in fileSystemInfos)
             {
-                string relativePath = fileSystemInfo.FullName.Substring(prefixLength);
+                string relativePath = (string)pathField.GetValue(fileSystemInfo);
+                relativePath = relativePath.Substring(prefixLength);
                 if (fileSystemInfo is FileInfo)
                 {
                     files.Add(relativePath);
