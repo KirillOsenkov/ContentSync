@@ -283,6 +283,17 @@ namespace GuiLabs.FileUtilities
                     Log.WriteLine("Made no changes.", ConsoleColor.White);
                 }
             }
+
+            // if there were no errors, delete the cache of the folder contents. Otherwise
+            // chances are they're going to restart the process, so we might needs the cache
+            // next time.
+            if (filesFailedToCopy == 0 &&
+                filesFailedToDelete == 0 &&
+                foldersFailedToCreate == 0 &&
+                foldersFailedToDelete == 0)
+            {
+                DirectoryContentsCache.ClearWrittenFilesFromCache();
+            }
         }
 
         /// <summary>

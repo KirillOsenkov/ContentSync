@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
+    <Compile Include="DirectoryContentsCache.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Program.cs" />
@@ -47,6 +48,7 @@
     <Compile Include="Folders.cs" />
     <Compile Include="Paths.cs" />
     <Compile Include="Sync.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ContentSync.nuspec" />

@@ -45,6 +45,12 @@ namespace GuiLabs.FileUtilities
             {
                 try
                 {
+                    // this can happen if the directory contents cache is out-of-date
+                    if (!File.Exists(deletedFilePath))
+                    {
+                        return true;
+                    }
+
                     var attributes = File.GetAttributes(deletedFilePath);
                     if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                     {

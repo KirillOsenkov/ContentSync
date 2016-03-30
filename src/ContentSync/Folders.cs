@@ -110,6 +110,11 @@ namespace GuiLabs.FileUtilities
 
         public static void GetRelativePathsOfAllFiles(string rootFolder, string pattern, HashSet<string> files, HashSet<string> folders)
         {
+            if (DirectoryContentsCache.TryReadFromCache(rootFolder, pattern, files, folders))
+            {
+                return;
+            }
+
             var rootDirectoryInfo = new DirectoryInfo(rootFolder);
             var prefixLength = rootFolder.Length;
             var fileSystemInfos = rootDirectoryInfo.EnumerateFileSystemInfos(pattern, SearchOption.AllDirectories);
@@ -126,6 +131,8 @@ namespace GuiLabs.FileUtilities
                     folders.Add(relativePath);
                 }
             }
+
+            DirectoryContentsCache.SaveToCache(rootFolder, pattern, files, folders);
         }
     }
 }
