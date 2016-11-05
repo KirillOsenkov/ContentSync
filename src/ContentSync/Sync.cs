@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using static GuiLabs.Common.Utilities;
 
 namespace GuiLabs.FileUtilities
 {
@@ -19,7 +20,12 @@ namespace GuiLabs.FileUtilities
             source = Paths.TrimSeparator(source);
             destination = Paths.TrimSeparator(destination);
 
-            var diff = Folders.DiffFolders(source, destination, arguments.Pattern, compareContents: arguments.UpdateChangedFiles);
+            var diff = Folders.DiffFolders(
+                source,
+                destination,
+                arguments.Pattern,
+                recursive: !arguments.Nonrecursive,
+                compareContents: arguments.UpdateChangedFiles);
 
             bool changesMade = false;
             int filesFailedToCopy = 0;
@@ -163,113 +169,125 @@ namespace GuiLabs.FileUtilities
 
             if (diff.LeftOnlyFiles.Any() && arguments.CopyLeftOnlyFiles)
             {
+                var count = diff.LeftOnlyFiles.Count();
+                var fileOrFiles = Pluralize("file", count);
                 if (arguments.WhatIf)
                 {
-                    Log.WriteLine($"Would have copied {diff.LeftOnlyFiles.Count()} new files", ConsoleColor.Green);
+                    Log.WriteLine($"Would have copied {count} new {fileOrFiles}", ConsoleColor.Green);
                 }
                 else
                 {
-                    Log.WriteLine($"{diff.LeftOnlyFiles.Count()} new files copied", ConsoleColor.Green);
+                    Log.WriteLine($"{count} new {fileOrFiles} copied", ConsoleColor.Green);
                 }
             }
 
             if (foldersCreated > 0 && arguments.CopyEmptyDirectories)
             {
+                var folderOrFolders = Pluralize("folder", foldersCreated);
                 if (arguments.WhatIf)
                 {
-                    Log.WriteLine($"Would have created {foldersCreated} folders", ConsoleColor.Green);
+                    Log.WriteLine($"Would have created {foldersCreated} {folderOrFolders}", ConsoleColor.Green);
                 }
                 else
                 {
-                    Log.WriteLine($"{foldersCreated} folders created", ConsoleColor.Green);
+                    Log.WriteLine($"{foldersCreated} {folderOrFolders} created", ConsoleColor.Green);
                 }
             }
 
             if (diff.ChangedFiles.Any() && arguments.UpdateChangedFiles)
             {
+                var count = diff.ChangedFiles.Count();
+                var fileOrFiles = Pluralize("file", count);
                 if (arguments.WhatIf)
                 {
-                    Log.WriteLine($"Would have updated {diff.ChangedFiles.Count()} changed files", ConsoleColor.Yellow);
+                    Log.WriteLine($"Would have updated {count} changed {fileOrFiles}", ConsoleColor.Yellow);
                 }
                 else
                 {
-                    Log.WriteLine($"{diff.ChangedFiles.Count()} changed files updated", ConsoleColor.Yellow);
+                    Log.WriteLine($"{count} changed {fileOrFiles} updated", ConsoleColor.Yellow);
                 }
             }
 
             if (diff.ChangedFiles.Any() && arguments.DeleteChangedFiles)
             {
+                var count = diff.ChangedFiles.Count();
+                var fileOrFiles = Pluralize("file", count);
                 if (arguments.WhatIf)
                 {
-                    Log.WriteLine($"Would have deleted {diff.ChangedFiles.Count()} changed files", ConsoleColor.Yellow);
+                    Log.WriteLine($"Would have deleted {count} changed {fileOrFiles}", ConsoleColor.Yellow);
                 }
                 else
                 {
-                    Log.WriteLine($"{diff.ChangedFiles.Count()} changed files deleted", ConsoleColor.Yellow);
+                    Log.WriteLine($"{count} changed {fileOrFiles} deleted", ConsoleColor.Yellow);
                 }
             }
 
             if (diff.RightOnlyFiles.Any() && arguments.DeleteRightOnlyFiles)
             {
+                var count = diff.RightOnlyFiles.Count();
+                var fileOrFiles = Pluralize("file", count);
                 if (arguments.WhatIf)
                 {
-                    Log.WriteLine($"Would have deleted {diff.RightOnlyFiles.Count()} right-only files", ConsoleColor.Red);
+                    Log.WriteLine($"Would have deleted {count} right-only {fileOrFiles}", ConsoleColor.Red);
                 }
                 else
                 {
-                    Log.WriteLine($"{diff.RightOnlyFiles.Count()} right-only files deleted", ConsoleColor.Red);
+                    Log.WriteLine($"{count} right-only {fileOrFiles} deleted", ConsoleColor.Red);
                 }
             }
 
             if (foldersDeleted > 0 && arguments.DeleteRightOnlyDirectories)
             {
+                var folderOrFolders = Pluralize("folder", foldersDeleted);
                 if (arguments.WhatIf)
                 {
-                    Log.WriteLine($"Would have deleted {foldersDeleted} right-only folders", ConsoleColor.Red);
+                    Log.WriteLine($"Would have deleted {foldersDeleted} right-only {folderOrFolders}", ConsoleColor.Red);
                 }
                 else
                 {
-                    Log.WriteLine($"{foldersDeleted} right-only folders deleted", ConsoleColor.Red);
+                    Log.WriteLine($"{foldersDeleted} right-only {folderOrFolders} deleted", ConsoleColor.Red);
                 }
             }
 
             if (diff.IdenticalFiles.Any())
             {
+                var count = diff.IdenticalFiles.Count();
+                var fileOrFiles = Pluralize("file", count);
                 if (arguments.DeleteSameFiles)
                 {
                     if (arguments.WhatIf)
                     {
-                        Log.WriteLine($"Would have deleted {diff.IdenticalFiles.Count()} identical files from destination", ConsoleColor.White);
+                        Log.WriteLine($"Would have deleted {count} identical {fileOrFiles} from destination", ConsoleColor.White);
                     }
                     else
                     {
-                        Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files deleted from destination", ConsoleColor.White);
+                        Log.WriteLine($"{count} identical {fileOrFiles} deleted from destination", ConsoleColor.White);
                     }
                 }
                 else
                 {
-                    Log.WriteLine($"{diff.IdenticalFiles.Count()} identical files", ConsoleColor.White);
+                    Log.WriteLine($"{count} identical {fileOrFiles}", ConsoleColor.White);
                 }
             }
 
             if (filesFailedToCopy > 0)
             {
-                Log.WriteLine($"Failed to copy {filesFailedToCopy} files", ConsoleColor.Red);
+                Log.WriteLine($"Failed to copy {filesFailedToCopy} {Pluralize("file", filesFailedToCopy)}", ConsoleColor.Red);
             }
 
             if (filesFailedToDelete > 0)
             {
-                Log.WriteLine($"Failed to delete {filesFailedToDelete} files.", ConsoleColor.Red);
+                Log.WriteLine($"Failed to delete {filesFailedToDelete} {Pluralize("file", filesFailedToDelete)}.", ConsoleColor.Red);
             }
 
             if (foldersFailedToCreate > 0)
             {
-                Log.WriteLine($"Failed to create {foldersFailedToCreate} folders.", ConsoleColor.Red);
+                Log.WriteLine($"Failed to create {foldersFailedToCreate} {Pluralize("folder", foldersFailedToCreate)}.", ConsoleColor.Red);
             }
 
             if (foldersFailedToDelete > 0)
             {
-                Log.WriteLine($"Failed to delete {foldersFailedToDelete} folders.", ConsoleColor.Red);
+                Log.WriteLine($"Failed to delete {foldersFailedToDelete} {Pluralize("folder", foldersFailedToDelete)}.", ConsoleColor.Red);
             }
 
             if (!changesMade)

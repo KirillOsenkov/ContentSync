@@ -40,5 +40,17 @@ namespace GuiLabs.Common
 
             return new string(c);
         }
+
+        public static string Pluralize(string noun, int count)
+        {
+            if (count == 1)
+            {
+                return noun;
+            }
+            else
+            {
+                return noun + "s";
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace GuiLabs.FileUtilities
         public string Source { get; set; }
         public string Destination { get; set; }
         public string Pattern { get; set; } = "*";
+        public bool Nonrecursive { get; set; }
 
         public bool CopyLeftOnlyFiles { get; private set; } = true;
         public bool UpdateChangedFiles { get; private set; } = true;
@@ -100,6 +101,9 @@ namespace GuiLabs.FileUtilities
                             break;
                         case "dc":
                             DeleteChangedFiles = true;
+                            break;
+                        case "n":
+                            Nonrecursive = true;
                             break;
                         case "q":
                             Quiet = true;

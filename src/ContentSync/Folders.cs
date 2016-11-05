@@ -13,13 +13,18 @@ namespace GuiLabs.FileUtilities
         /// <summary>
         /// Assumes leftRoot is an existing folder. rightRoot may not exist if operating in speculative mode.
         /// </summary>
-        public static FolderDiffResults DiffFolders(string leftRoot, string rightRoot, string pattern, bool compareContents = true)
+        public static FolderDiffResults DiffFolders(
+            string leftRoot,
+            string rightRoot,
+            string pattern,
+            bool recursive = true,
+            bool compareContents = true)
         {
             HashSet<string> leftRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             HashSet<string> leftOnlyFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             using (Log.MeasureTime("Scanning source directory"))
             {
-                GetRelativePathsOfAllFiles(leftRoot, pattern, leftRelativePaths, leftOnlyFolders);
+                GetRelativePathsOfAllFiles(leftRoot, pattern, recursive, leftRelativePaths, leftOnlyFolders);
             }
 
             HashSet<string> rightRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -28,7 +33,7 @@ namespace GuiLabs.FileUtilities
             {
                 using (Log.MeasureTime("Scanning destination directory"))
                 {
-                    GetRelativePathsOfAllFiles(rightRoot, pattern, rightRelativePaths, rightOnlyFolders);
+                    GetRelativePathsOfAllFiles(rightRoot, pattern, recursive, rightRelativePaths, rightOnlyFolders);
                 }
             }
 
@@ -108,16 +113,18 @@ namespace GuiLabs.FileUtilities
 
         private static readonly FieldInfo pathField = typeof(FileSystemInfo).GetField("FullPath", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public static void GetRelativePathsOfAllFiles(string rootFolder, string pattern, HashSet<string> files, HashSet<string> folders)
+        public static void GetRelativePathsOfAllFiles(string rootFolder, string pattern, bool recursive, HashSet<string> files, HashSet<string> folders)
         {
-            if (DirectoryContentsCache.TryReadFromCache(rootFolder, pattern, files, folders))
+            // don't go through the cache for non-recursive case
+            if (recursive && DirectoryContentsCache.TryReadFromCache(rootFolder, pattern, files, folders))
             {
                 return;
             }
 
             var rootDirectoryInfo = new DirectoryInfo(rootFolder);
             var prefixLength = rootFolder.Length;
-            var fileSystemInfos = rootDirectoryInfo.EnumerateFileSystemInfos(pattern, SearchOption.AllDirectories);
+            var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+            var fileSystemInfos = rootDirectoryInfo.EnumerateFileSystemInfos(pattern, searchOption);
             foreach (var fileSystemInfo in fileSystemInfos)
             {
                 string relativePath = (string)pathField.GetValue(fileSystemInfo);
@@ -132,7 +139,10 @@ namespace GuiLabs.FileUtilities
                 }
             }
 
-            DirectoryContentsCache.SaveToCache(rootFolder, pattern, files, folders);
+            if (recursive)
+            {
+                DirectoryContentsCache.SaveToCache(rootFolder, pattern, files, folders);
+            }
         }
     }
 }

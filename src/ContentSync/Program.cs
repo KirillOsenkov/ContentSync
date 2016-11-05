@@ -76,7 +76,7 @@ namespace GuiLabs.FileUtilities
         private static void PrintUsage()
         {
             Console.WriteLine(@"Usage: ContentSync.exe <source> <destination> [<pattern>] [-c] [-u] [-d] 
-                                                          [-dc] [-ds] 
+                                                          [-dc] [-ds] [-n]
                                                           [-whatif] [-q] 
                                                           [-h]
 
@@ -100,6 +100,8 @@ namespace GuiLabs.FileUtilities
             source and destination and have identical contents).
 
    -dc      Delete changed files from destination (can't be used with -u).
+
+   -n       Non-recursive (only compare files at top-level).
 
    -whatif  Print what would have been done (without changing anything).
 
