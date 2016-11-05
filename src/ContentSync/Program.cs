@@ -59,6 +59,12 @@ namespace GuiLabs.FileUtilities
                         destination = Path.GetFullPath(destination);
                     }
 
+                    if (arguments.Pattern != "*")
+                    {
+                        Log.WriteError($"The pattern cannot be specified when processing a single file.");
+                        return 4;
+                    }
+
                     Sync.Files(source, destination, arguments);
                     return 0;
                 }
