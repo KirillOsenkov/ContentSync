@@ -56,7 +56,7 @@ namespace GuiLabs.FileUtilities
 
             if (switches.Any())
             {
-                if (switches.Where(s => s != "q" && s != "whatif").Any())
+                if (switches.Where(IsCrudSwitch).Any())
                 {
                     // if any of c, u, d, ds or dc are specified, they're in explicit mode, assume all defaults false
                     CopyLeftOnlyFiles = false;
@@ -77,6 +77,7 @@ namespace GuiLabs.FileUtilities
                             UpdateChangedFiles = true;
                             break;
                         case "cu":
+                        case "uc":
                             CopyLeftOnlyFiles = true;
                             UpdateChangedFiles = true;
                             break;
@@ -88,11 +89,17 @@ namespace GuiLabs.FileUtilities
                             DeleteRightOnlyFiles = true;
                             break;
                         case "cud":
+                        case "cdu":
+                        case "duc":
+                        case "dcu":
+                        case "ucd":
+                        case "udc":
                             CopyLeftOnlyFiles = true;
                             UpdateChangedFiles = true;
                             DeleteRightOnlyFiles = true;
                             break;
                         case "ud":
+                        case "du":
                             UpdateChangedFiles = true;
                             DeleteRightOnlyFiles = true;
                             break;
@@ -196,6 +203,31 @@ namespace GuiLabs.FileUtilities
 
             Source = paths[0];
             Destination = paths[1];
+        }
+
+        private static readonly HashSet<string> crudSwitches = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "c",
+            "u",
+            "d",
+            "cu",
+            "uc",
+            "cd",
+            "ud",
+            "du",
+            "cud",
+            "cdu",
+            "dcu",
+            "duc",
+            "ucd",
+            "udc",
+            "ds",
+            "dc"
+        };
+
+        private static bool IsCrudSwitch(string s)
+        {
+            return crudSwitches.Contains(s);
         }
     }
 }
