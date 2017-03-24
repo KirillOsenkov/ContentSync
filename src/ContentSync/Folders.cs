@@ -133,7 +133,7 @@ namespace GuiLabs.FileUtilities
                 {
                     files.Add(relativePath);
                 }
-                else
+                else if (recursive)
                 {
                     folders.Add(relativePath);
                 }
