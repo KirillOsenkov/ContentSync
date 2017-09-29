@@ -25,7 +25,10 @@ namespace GuiLabs.FileUtilities
                 destination,
                 arguments.Pattern,
                 recursive: !arguments.Nonrecursive,
-                compareContents: arguments.UpdateChangedFiles);
+                compareContents:
+                    arguments.UpdateChangedFiles ||
+                    arguments.DeleteChangedFiles ||
+                    arguments.DeleteSameFiles);
 
             bool changesMade = false;
             int filesFailedToCopy = 0;
