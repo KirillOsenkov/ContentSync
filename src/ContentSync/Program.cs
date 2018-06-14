@@ -74,7 +74,7 @@ namespace GuiLabs.FileUtilities
             }
             catch (Exception ex)
             {
-                Log.WriteError($"Unrecoverable error: {ex.Message}");
+                Log.WriteError(ex.ToString());
                 return 3;
             }
         }
