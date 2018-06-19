@@ -62,7 +62,17 @@ namespace GuiLabs.FileUtilities
                         bool rightContains = rightRelativePaths.Contains(left);
                         if (rightContains)
                         {
-                            bool areSame = !compareContents || Files.AreContentsIdentical(leftFullPath, rightFullPath);
+                            bool areSame;
+                            try
+                            {
+                                areSame = !compareContents || Files.AreContentsIdentical(leftFullPath, rightFullPath);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.WriteError(ex.ToString());
+                                return;
+                            }
+
                             if (areSame)
                             {
                                 lock (identicalFiles)

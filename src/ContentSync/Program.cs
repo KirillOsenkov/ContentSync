@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace GuiLabs.FileUtilities
@@ -36,6 +37,8 @@ namespace GuiLabs.FileUtilities
 
                     using (Log.MeasureTime("Total time"))
                     {
+                        Console.WriteLine("Source: " + source);
+                        Console.WriteLine("Destination: " + destination);
                         Sync.Directories(source, destination, arguments);
                     }
 
@@ -75,6 +78,7 @@ namespace GuiLabs.FileUtilities
             catch (Exception ex)
             {
                 Log.WriteError(ex.ToString());
+                Log.WriteLine($"Private Memory: {Process.GetCurrentProcess().PrivateMemorySize64}");
                 return 3;
             }
         }
