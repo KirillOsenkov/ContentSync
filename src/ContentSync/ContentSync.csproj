@@ -10,6 +10,7 @@
     <AssemblyName>ContentSync</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugType>embedded</DebugType>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
