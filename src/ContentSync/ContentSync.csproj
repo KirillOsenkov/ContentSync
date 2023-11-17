@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <Version>1.0.0</Version>
-    <TargetFramework>net7.0</TargetFramework>
+    <Version>1.0.1</Version>
+    <TargetFramework>net6.0</TargetFramework>
     <DebugType>embedded</DebugType>
+    <RollForward>major</RollForward>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,12 +15,17 @@
     <PackageId>contentsync</PackageId>
     <Authors>Kirill Osenkov</Authors>
     <Company>GuiLabs</Company>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Description>A tool to sync directory contents and avoid touching files with identical content. Read more at https://github.com/KirillOsenkov/ContentSync.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/KirillOsenkov/ContentSync</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KirillOsenkov/ContentSync</RepositoryUrl>
     <PackageTags>contentsync copy directory sync</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\readme.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="ContentSync.nuspec" />
